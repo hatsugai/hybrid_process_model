@@ -1,0 +1,23 @@
+(library
+ (name hybrid_process_model)
+ (flags (:standard -w -26-27-32-33))
+ (libraries ppx_deriving process)
+ (inline_tests)
+ (preprocess
+  (pps ppx_inline_test ppx_deriving.show ppx_deriving.eq ppx_deriving.ord ppx_hash)))
+
+(rule
+ (targets parser.ml parser.mli parser.output)
+ (deps    parser.mly)
+ (action  (chdir %{workspace_root}
+           (run %{bin:ocamlyacc} -v %{deps}))))
+
+;; (rule
+;;  (targets parser.ml parser.mli)
+;;  (deps    parser.mly)
+;;  (action  (chdir %{workspace_root}
+;;            (run %{bin:menhir} --infer %{deps}))))
+
+;(menhir (modules parser))
+;(ocamlyacc parser)
+(ocamllex lexer)
