@@ -464,6 +464,17 @@ and pelk d k c vs =
      pek d k c (V.Record { fields })
 
 and pec d k c args name params stmt_id le =
+  let le =
+    List.fold_left2
+      (fun le x v -> IdMap.add x v le)
+      le params args
+  in
+  let c =
+    { c with
+      le;
+      cs = ({ name; le = c.le; wl = c.wl; econt = k }::c.cs);
+      wl = [] }
+  in
   let cont = ScEventCall (k, name, params, stmt_id, le, args) in
   match IdHash.find_opt d.observ name with
     Some o when o = Call || o = Both ->
@@ -495,17 +506,6 @@ and psk d k c =
              pek d k c V.Unit)
       | _ -> error "return")
   | ScEventCall (k, name, xs, stmt_id, le, vs) ->
-     let le =
-       List.fold_left2
-         (fun le x v -> IdMap.add x v le)
-         le xs vs
-     in
-     let c =
-       { c with
-         le;
-         cs = ({ name; le = c.le; wl = c.wl; econt = k }::c.cs);
-         wl = [] }
-     in
      exec d c stmt_id ScReturn
   | ScEventReturn (k, v) ->
      pek d k c v
