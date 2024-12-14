@@ -59,11 +59,11 @@ let make_d_c_defs ?(literals=[]) ?(constructors=[])
         match def with
           S.Constant (name, expr) ->
            (match eval d c (U.expr_id m expr) EcCont with
-              ResEcCont (_, v) -> IdHash.add cdefs name v; c
+              ResEcCont (c, v) -> IdHash.add cdefs name v; c
             | _ -> error "")
         | S.Variable (name, expr) ->
            (match eval d c (U.expr_id m expr) EcCont with
-              ResEcCont (_, v) -> { c with ge = IdMap.add name v c.ge }
+              ResEcCont (c, v) -> { c with ge = IdMap.add name v c.ge }
             | _ -> error "")
         | S.Function _ -> c)
       c def_list
